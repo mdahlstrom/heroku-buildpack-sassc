@@ -36,6 +36,8 @@ if [[ -f "$CACHE_DIR/version" ]]; then
 else
     update="yes"
 fi
+update="yes"
+echo "Updating: ${update}"
 echo -n "${VERSION}" > $CACHE_DIR/version
 
 if [[ -d "$LIBSASS_DIR/.git" ]]; then
@@ -56,13 +58,16 @@ run_silent "make static"
 
 if [[ -d "$SASSC_DIR/.git" ]]; then
     printlog "Fetching new commits from sassc repository"
-    run_silent "git fetch -p"
+    #run_silent "git fetch -p"
+    git fetch -p
 else
     printlog "Downloading sassc"
     run_silent "git clone https://github.com/sass/sassc.git $SASSC_DIR"
 fi
 cd $SASSC_DIR
-run_silent "git checkout ${VERSION}"
+printlog "Checking out sassc v${VERSION}"
+#run_silent "git checkout ${VERSION}"
+git checkout ${VERSION}
 if [[ "$update" == "yes" ]]; then
     run_silent "make clean"
 fi
