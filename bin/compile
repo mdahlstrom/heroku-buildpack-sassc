@@ -24,6 +24,8 @@ run_silent() {
 }
 
 mkdir -p $CACHE_DIR
+printlog "Cache directory: ${CACHE_DIR}"
+
 if [[ -f "$CACHE_DIR/version" ]]; then
     oldversion="$(cat $CACHE_DIR/version)"
     if [[ "$oldversion" == "${VERSION}" ]]; then
