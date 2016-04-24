@@ -24,6 +24,17 @@ run_silent() {
 }
 
 mkdir -p $CACHE_DIR
+if [[ -f "$CACHE_DIR/version" ]]; then
+    oldversion="$(cat $CACHE_DIR/version)"
+    if [[ "$oldversion" == "${VERSION}" ]]; then
+        update="no"
+    else
+        update="yes"
+    fi
+else
+    update="yes"
+fi
+echo -n "${VERSION}" > $CACHE_DIR/version
 
 if [[ -d "$LIBSASS_DIR/.git" ]]; then
     printlog "Fetching new commits from libsass repository"
@@ -35,6 +46,9 @@ fi
 cd $LIBSASS_DIR
 printlog "Checking out libsass v${VERSION}"
 run_silent "git checkout ${VERSION}"
+if [[ "$update" == "yes" ]]; then
+    run_silent "make clean"
+fi
 printlog "Building libsass"
 run_silent "make static"
 
@@ -47,6 +61,9 @@ else
 fi
 cd $SASSC_DIR
 run_silent "git checkout ${VERSION}"
+if [[ "$update" == "yes" ]]; then
+    run_silent "make clean"
+fi
 printlog "Building sassc"
 SASS_LIBSASS_PATH=$LIBSASS_DIR make build-static
 
