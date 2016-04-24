@@ -36,43 +36,44 @@ if [[ -f "$CACHE_DIR/version" ]]; then
 else
     update="yes"
 fi
-update="yes"
-echo "Updating: ${update}"
+printlog "Updating: ${update}"
 echo -n "${VERSION}" > $CACHE_DIR/version
 
 if [[ -d "$LIBSASS_DIR/.git" ]]; then
+    cd ${LIBSASS_DIR}
     printlog "Fetching new commits from libsass repository"
     run_silent "git fetch -p"
 else
     printlog "Downloading libsass"
     run_silent "git clone https://github.com/sass/libsass.git $LIBSASS_DIR"
+    cd ${LIBSASS_DIR}
 fi
-cd $LIBSASS_DIR
 printlog "Checking out libsass v${VERSION}"
 run_silent "git checkout ${VERSION}"
 if [[ "$update" == "yes" ]]; then
+    printlog "Cleaning old libsass build"
     run_silent "make clean"
 fi
 printlog "Building libsass"
 run_silent "make static"
 
 if [[ -d "$SASSC_DIR/.git" ]]; then
+    cd ${SASSC_DIR}
     printlog "Fetching new commits from sassc repository"
-    #run_silent "git fetch -p"
-    git fetch -p
+    run_silent "git fetch -p"
 else
     printlog "Downloading sassc"
     run_silent "git clone https://github.com/sass/sassc.git $SASSC_DIR"
+    cd ${SASSC_DIR}
 fi
-cd $SASSC_DIR
 printlog "Checking out sassc v${VERSION}"
-#run_silent "git checkout ${VERSION}"
-git checkout ${VERSION}
+run_silent "git checkout ${VERSION}"
 if [[ "$update" == "yes" ]]; then
+    printlog "Cleaning old sassc build"
     run_silent "make clean"
 fi
 printlog "Building sassc"
-SASS_LIBSASS_PATH=$LIBSASS_DIR make build-static
+SASS_LIBSASS_PATH=${LIBSASS_DIR} make build-static
 
 printlog "Installing sassc"
 mkdir -p $INSTALL_DIR/bin
