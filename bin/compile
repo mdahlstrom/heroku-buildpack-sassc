@@ -81,3 +81,7 @@ cp $SASSC_DIR/bin/sassc $INSTALL_DIR/bin/sassc
 
 mkdir -p $PROFILE_DIR
 echo "export PATH=\$PATH:\$HOME/$INSTALL_PATH/bin" > $PROFILE_DIR/sassc.sh
+
+# Exporting the PATH variable, so that buildpacks following after this can use sassc
+BUILDPACK_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+echo "export PATH=\$PATH:$INSTALL_DIR/bin" > $BUILDPACK_DIR/export
